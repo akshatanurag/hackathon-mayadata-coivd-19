@@ -16,17 +16,17 @@ let getDate = ()=>{
 
 app.get("/",async(req,res)=>{
 
-    let axiosRes = await axios({
-        "method":"GET",
-        "url":"https://covid-19-statistics.p.rapidapi.com/reports/total",
-        "headers":{
-        "content-type":"application/octet-stream",
-        "x-rapidapi-host":"covid-19-statistics.p.rapidapi.com",
-        "x-rapidapi-key":"429f1e372amsh301f3be908fb59bp10d532jsnd5bb83db3c50"
-        },"params":{
-        "date":getDate()
-        }
-        })
+    // let axiosRes = await axios({
+    //     "method":"GET",
+    //     "url":"https://covid-19-statistics.p.rapidapi.com/reports/total",
+    //     "headers":{
+    //     "content-type":"application/octet-stream",
+    //     "x-rapidapi-host":"covid-19-statistics.p.rapidapi.com",
+    //     "x-rapidapi-key":"429f1e372amsh301f3be908fb59bp10d532jsnd5bb83db3c50"
+    //     },"params":{
+    //     "date":getDate()
+    //     }
+    //     })
     let countryList = await axios({
         "method":"GET",
         "url":"https://covid-19-statistics.p.rapidapi.com/regions",
@@ -36,13 +36,24 @@ app.get("/",async(req,res)=>{
         "x-rapidapi-key":"429f1e372amsh301f3be908fb59bp10d532jsnd5bb83db3c50"
         }
         })
-    //let countyData = await axios.get('https://api.covid19api.com/summary')
+    let myObj = [];
+    let countyData = await axios.get('https://api.covid19api.com/summary')
+    myObj.push(`{"${countyData.data.Countries[0].CountryCode}" : ${countyData.data.Countries[0].TotalConfirmed}`)
+    let countryCode = []; let TotalConfirmed = []
+    for(var i=0;i<countyData.data.Countries.length;i++){
+    countryCode.push(countyData.data.Countries[i].CountryCode)
+    TotalConfirmed.push(countyData.data.Countries[i].TotalConfirmed)
+    myObj.push(`"${countryCode[i]}" : ${TotalConfirmed[i]}`)
+    }
+    myObj.push("}")
+    //console.log(myObj)
     res.render("index",{
-        result: axiosRes.data.data,
-        countryList: countryList.data.data
+        result: countyData.data.Global,
+        countryList: countryList.data.data,
+        mapData: myObj
     })
 })
-
-app.listen(3000,()=>{
+let port = 3000 | process.env.PORT
+app.listen(port,process.env.IP,()=>{
     console.log('Live on 3000')
 })
