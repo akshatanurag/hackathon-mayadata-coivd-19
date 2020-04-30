@@ -53,7 +53,7 @@ app.get("/",async(req,res)=>{
         mapData: myObj
     })
 })
-let port = 3000 | process.env.PORT
+let port = process.env.PORT || 3000
 app.listen(port,process.env.IP,()=>{
     console.log('Live on 3000')
 })
